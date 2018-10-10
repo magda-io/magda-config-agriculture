@@ -5,17 +5,17 @@ global:
   ## all run in separate pods unless some managed postgres solution (e.g.
   ## useCloudSql) is specified elsewhere.
   ## Running in separate pods scales better, but requires more resources
-  # useCombinedDb: true
+  useCombinedDb: false
 
   ## Whether to use the Google Cloud SQL managed postgres solution. Only set
   ## this to true if you already have cloud sql set up and be sure to look at
   ## settings for the cloud-sql-proxy service below.
-  # useCloudSql: false
+  useCloudSql: true
 
   ## The external URL of the installation, e.g. "https://search.data.gov.au".
   ## This is used in a number of places, including linking back to the site
   ## from emails, creating a absolute sitemap URL for robots.txt, etc.
-  externalUrl: https://example.com
+  externalUrl: https://agriculture.magda.io
 
   ## How to handle rolling updates during a deployment. If set to 0, kubernetes
   ## will happily take down pods while it replaces them (useful for dev setups).
@@ -24,11 +24,11 @@ global:
   # rollingUpdate:
   #   maxUnavailable: 0
 
-  #image:
+  image:
     ## What tag of the magda images to get. Look at
     ## for versions. https://github.com/magda-io/magda/releases/latest.
     ## By default this is the same version as the helm chart.
-    # tag:
+    tag: 0.0.49-RC2
     ## The docker repository to get the images from - defaults to the official
     ## data61 docker hub repo
     # repository: data61
@@ -65,35 +65,35 @@ global:
 ## to send emails, turn the correspondence-api off
 tags:
   ## "all" is a shortcut which turns on all services except minions.
-  all: true
+  all: false
 
   ## General services. Note that if you are using combined-db, you need to set both
   ## combined-db and the databases that you are using (e.g. authorization-db) to true.
   ## You can find explanations of what each of these are below
 
-  # apidocs-server: true
-  # authorization-api: true
-  # authorization-db: true
-  # cloud-sql-proxy: true
+  apidocs-server: true
+  authorization-api: true
+  authorization-db: true
+  cloud-sql-proxy: true
   # combined-db: true
-  # content-db: true
-  # content-api: true
-  # correspondence-api: true
-  # elasticsearch: true
-  # gateway: true
-  # indexer: true
-  # preview-map: true
-  # registry-api: true
-  # registry-db: true
-  # search-api: true
-  # session-db: true
-  # web-server: true
-  # connectors: true
+  content-db: true
+  content-api: true
+  correspondence-api: true
+  elasticsearch: true
+  gateway: true
+  indexer: true
+  preview-map: true
+  registry-api: true
+  registry-db: true
+  search-api: true
+  session-db: true
+  web-server: true
+  connectors: true
 
   ## Whether to use an ingress, which is necessary for HTTPS and using the Google CDN with
   ## Google Kubernetes Engine. By default this is off, and access is provided to the cluster
   ## through a Kubernetes LoadBalancer service
-  # ingress: false
+  ingress: true
 
   ## Minions, which listen to changes in the registry and add extra metadata
   minion-broken-link: true
@@ -102,7 +102,6 @@ tags:
   minion-format: true
 
 ## These are the external jobs that pull data in from other data portals. A default is provided here for you.
-connectors:
   ## Whether to run an initial job to crawl all these on install
   # includeInitialJobs: true
 
@@ -126,49 +125,27 @@ connectors:
     # pullPolicy: IfNotPresent
     # imagePullSecret: ""
 
-  config:
-      ## The service's image as per the global options under "global.image", but with a "name "
-      ## currently available are magda-ckan-connector, magda-project-open-data-connector and magda-csw-connector
-    - image:
-        name: "magda-ckan-connector"
-        # tag: vx.x.x
-        # pullPolicy: IfNotPresent
-        # imagePullSecret: ""
-
-      ## Unique id to identify this connector and records that are harvested from it
-      id: dga
-      ## Friendly readable name
-      name: "data.gov.au"
-      ## The base URL of the place to source data from
-      sourceUrl: "https://data.gov.au/"
-      ## When crawling through from beginning to end, how big should the individual requests be in records?
-      pageSize: 1000
-      ## Crontab schedule for how often this should happen.
-      schedule: "0 * * * *"
-      ## CKAN-specific config: what harvest sources to ignore. * will ignore everything that's been harvested
-      ## from another portal
-      ignoreHarvestSources: ["*"]
 
 
 ## Settings for the ingress. You need one of these if you want to do SSL or use the Google CDN on GKE
 ## Otherwise using the built-in Kubernetes LoadBalancer works ok.
-# ingress:
+ingress:
   ## The hostname of the site
-  # hostname: example.com
+  hostname: agriculture.magda.io
   ## The name of the external ip to use - used when using the GCE ingress type
-  # ipName:
+  ipName: magda-agriculture-prod
   ## The class of the ingress - if running on GKE, gce will automatically work, otherwise you
   ## can use "nginx" which requires extra setup
-  # ingressClass: gce
+  ingressClass: gce
   ## Whether to enable TLS - requires a TLS secret to be set:
   ## https://kubernetes.io/docs/tasks/tls/managing-tls-in-a-cluster/
-  # enableTls: false
+  enableTls: true
   ## Name of the tls secret, defaults to "magda-cert-tls"
-  # tlsSecretName: "magda-cert-tls"
+  tlsSecretName: "magda-cert-tls"
   ## Domains to attempt to obtain an SSL certificate for from let's encrypt, if using certmanager
   ## (requires extra setup)
-  # domains:
-  #   - example.com
+  domains:
+    - agriculture.magda.io
 
 ## Below are individual settings for services. All services can be customised as follows:
 # servicename:
@@ -240,9 +217,9 @@ connectors:
 # authorization-db:
 
 ## A pod for proxying to Google Cloud SQL, the GCE managed database service.
-# cloud-sql-proxy:
+cloud-sql-proxy:
   ## The cloud sql instance to connect to
-  # instanceConnectionName: project:region:instanceid
+  instanceConnectionName: magda-agriculture:australia-southeast1:agriculture-prod
 
 ## A pod that combines all the databases if global.useCombinedDb is set to true
 # combined-db:
@@ -257,14 +234,14 @@ connectors:
 correspondence-api:
   ## The default recipient to email when there's no other choice - e.g. when asking a
   ## question about a dataset for which there's no organisational email
-  defaultRecipient: "test@example.com"
+  defaultRecipient: "contact@magda.io"
 
   ## The hostname of the SMTP server to use - the password should be in a secret
-  smtpHostname: "example.com"
+  smtpHostname: "smtp.mailgun.org"
 
   ## The SMTP port to use - beware, default SMTP ports are blocked on most cloud
   ## providers
-  smtpPort: 80
+  smtpPort: 2525
 
 ## The elasticsearch setup - this can consist of up to three different kinds of pods -
 ## data nodes, master nodes and client nodes.
@@ -299,7 +276,7 @@ gateway:
   service:
     ## The type of kubernetes service to use for the gateway - set to LoadBalancer to
     ## expose an external IP, or leave blank if using an ingress
-    type: LoadBalancer
+    # type: LoadBalancer
 
     ## If using a LoadBalancer, the IP to try to use. Leave unset to get an automatic one
     # loadBalancerIP:
@@ -338,7 +315,7 @@ gateway:
 
   ## Enables a simple form at /auth that allows you to test login and logout functionality
   ## without needing a web pod
-  # enableAuthEndpoint: false
+  enableAuthEndpoint: true
 
 ## Configures the service that puts datasets and organisations into elasticsearch
 # indexer:
