@@ -24,11 +24,11 @@ global:
   # rollingUpdate:
   #   maxUnavailable: 0
 
-  image:
+  # image:
     ## What tag of the magda images to get. Look at
     ## for versions. https://github.com/magda-io/magda/releases/latest.
     ## By default this is the same version as the helm chart.
-    tag: 0.0.49-RC2
+    ## tag: 0.0.49-RC3
     ## The docker repository to get the images from - defaults to the official
     ## data61 docker hub repo
     # repository: data61
@@ -47,7 +47,7 @@ global:
   ## Whether to enable kubernetes liveness probes - these continually hit pods in
   ## order to see whether they're still alive and restart them upon too many failures.
   ## This is essential for prod, but tends to create a lot of overhead in development
-  # enableLivenessProbes: false
+  enableLivenessProbes: true
 
   ## The admin to use as the root admin user in the database. Defaults to the very first
   ## uuidv4
@@ -89,6 +89,7 @@ tags:
   session-db: true
   web-server: true
   connectors: true
+  admin-api: true
 
   ## Whether to use an ingress, which is necessary for HTTPS and using the Google CDN with
   ## Google Kubernetes Engine. By default this is off, and access is provided to the cluster
@@ -102,8 +103,15 @@ tags:
   minion-format: true
 
 ## These are the external jobs that pull data in from other data portals. A default is provided here for you.
+# connectors:
   ## Whether to run an initial job to crawl all these on install
   # includeInitialJobs: true
+  #config:
+    #- image:
+    #    name: magda-csv-connector
+    #  id: csv-connector
+    #  name: csv-connector
+    #  sourceUrl: https://content-api/v0/content/csv-connector.bin
 
   ## Whether to run recurring jobs on the schedule specified per connector.
   # includeCronJobs: true
@@ -303,19 +311,49 @@ gateway:
 
   ## Configures the Content Security Policy that will be set on all responses -
   ## the contents will be converted to JSON and passed into https://github.com/helmetjs/csp
-  # csp:
+  csp:
+    directives:
+      scriptSrc:
+      - "''self''"
+      - "''unsafe-inline''" # For VWO, hopefully we can remove this soon
+      - "data:" # Also for VWO
+      - browser-update.org
+      - dev.visualwebsiteoptimizer.com
+      - platform.twitter.com
+      - www.googletagmanager.com
+      - www.google-analytics.com
+      - rum-static.pingdom.net
+      - https://cdnjs.cloudflare.com/ajax/libs/rollbar.js/2.4.1/rollbar.min.js
+      - https://tagmanager.google.com/debug
+      - assets.zendesk.com
+      - static.zdassets.com
+      - ekr.zdassets.com
+      objectSrc:
+      - "''none''"
+      sandbox: # We run the sandbox because we have to have unsafe-inline, when we remove unsafe inline we should remove this
+      - allow-scripts
+      - allow-same-origin
+      - allow-popups
+      - allow-forms
+      - allow-popups-to-escape-sandbox
 
   ## Configures helmet.js - config will be converted to JSON and passed to
   ## https://github.com/helmetjs/helmet
-  # helmet:
+  helmet:
+    frameguard: false
 
   ## Configures cross-origin resource sharing - will be converted to JSON and passed
   ## to https://www.npmjs.com/package/cors#configuring-cors
-  # cors:
+  cors:
+    credentials: true
+    origin: true
 
   ## Enables a simple form at /auth that allows you to test login and logout functionality
   ## without needing a web pod
   enableAuthEndpoint: true
+
+  ## Turn on HTTP basic authentication
+  enableWebAccessControl: true
 
 ## Configures the service that puts datasets and organisations into elasticsearch
 # indexer:
