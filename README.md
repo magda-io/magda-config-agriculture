@@ -30,7 +30,7 @@ helm init --service-account tiller
 ```
 Output should look something like so:
 ```
-magda-create-secrets tool 
+magda-create-secrets tool
 ? Are you creating k8s secrets for google cloud or local testing cluster? Local Testing Kubernetes Cluster
 ? Which local k8s cluster environment you are going to connect to? docker
 ? Do you need to access SMTP service for sending data request email? YES
@@ -71,3 +71,7 @@ gateway                           LoadBalancer   10.102.57.74     123.456.789.12
 At this point you should be able to go to `http://<external ip>` in your browser and see the Magda UI. Note that the search won't work until it's finished indexing regions - to see the progress of this, run `kubectl logs -f -lservice=indexer`. Unless you've got a lot of processing power this will take quite a while - sorry! We're working on making it better.
 
 By default, data.gov.au will be crawled on startup so you'll start with some data.
+
+9. Once everything is running, run sql migration scripts for this instance
+
+https://github.com/magda-io/magda-config-agriculture/blob/master/sql-migrations/*.sql
