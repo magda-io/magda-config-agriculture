@@ -97,9 +97,9 @@ tags:
   ingress: true
 
   ## Minions, which listen to changes in the registry and add extra metadata
-  minion-broken-link: true
-  minion-linked-data-rating: true
-  minion-visualization: true
+  minion-broken-link: false
+  minion-linked-data-rating: false
+  minion-visualization: false
   minion-format: true
 
 ## These are the external jobs that pull data in from other data portals. A default is provided here for you.
