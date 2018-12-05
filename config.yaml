@@ -392,7 +392,10 @@ gateway:
 # session-db:
 
 ## The server used for serving the web application to users.
-# web-server:
+web-server:
+  gapiIds:
+    - "UA-92539508-5"
+
   ## Autoscaler settings - the min and max number of pods to use
   # autoscaler:
   #   minReplicas: 2
