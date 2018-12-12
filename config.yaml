@@ -284,7 +284,7 @@ gateway:
   service:
     ## The type of kubernetes service to use for the gateway - set to LoadBalancer to
     ## expose an external IP, or leave blank if using an ingress
-    type: NodeIP
+    type: NodePort
 
     ## If using a LoadBalancer, the IP to try to use. Leave unset to get an automatic one
     # loadBalancerIP:
