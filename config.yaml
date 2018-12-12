@@ -71,11 +71,12 @@ tags:
   ## combined-db and the databases that you are using (e.g. authorization-db) to true.
   ## You can find explanations of what each of these are below
 
+  admin-api: true
   apidocs-server: true
   authorization-api: true
   authorization-db: true
   cloud-sql-proxy: true
-  # combined-db: true
+  combined-db: true
   content-db: true
   content-api: true
   correspondence-api: true
@@ -88,8 +89,7 @@ tags:
   search-api: true
   session-db: true
   web-server: true
-  connectors: true
-  admin-api: true
+  connectors: false
 
   ## Whether to use an ingress, which is necessary for HTTPS and using the Google CDN with
   ## Google Kubernetes Engine. By default this is off, and access is provided to the cluster
@@ -99,7 +99,7 @@ tags:
   ## Minions, which listen to changes in the registry and add extra metadata
   minion-broken-link: false
   minion-linked-data-rating: false
-  minion-visualization: false
+  minion-visualization: true
   minion-format: true
 
 ## These are the external jobs that pull data in from other data portals. A default is provided here for you.
@@ -284,7 +284,7 @@ gateway:
   service:
     ## The type of kubernetes service to use for the gateway - set to LoadBalancer to
     ## expose an external IP, or leave blank if using an ingress
-    # type: LoadBalancer
+    type: NodeIP
 
     ## If using a LoadBalancer, the IP to try to use. Leave unset to get an automatic one
     # loadBalancerIP:
@@ -352,7 +352,10 @@ gateway:
   ## without needing a web pod
   enableAuthEndpoint: true
 
-  ## Turn on HTTP basic authentication
+  ## Redirect HTTP urls to HTTPs urls
+  enableHttpsRedirection: true
+
+  ## Turn on HTTP basic authentication - this uses secrets created by the create-secret script
   enableWebAccessControl: true
 
 ## Configures the service that puts datasets and organisations into elasticsearch
@@ -381,6 +384,20 @@ gateway:
   # livenessProbe:
     # timeoutSeconds: 10
 
+  ## The registry api is able to be split into two kinds of deployments: full, which does everything
+  ## but can only ever run one pod at a time, and read-only, which can only do read-only requests but
+  ## is stateless and can be horizontally scaled
+  # deployments:
+  #   full:
+
+    # readOnly:
+      ## Whether to enable the read-only deployment - if not all traffic will go to the full deployment,
+      ## otherwise traffic through /api/v0/registry will come here and only traffic to /api/v0/registry-auth
+      ## will go to the full deployment
+      # enable: false
+
+
+
 ## Configures the registry database, if a separate one is being used.
 # registry-db:
 
@@ -393,9 +410,6 @@ gateway:
 
 ## The server used for serving the web application to users.
 web-server:
-  gapiIds:
-    - "UA-92539508-5"
-
   ## Autoscaler settings - the min and max number of pods to use
   # autoscaler:
   #   minReplicas: 2
@@ -409,6 +423,13 @@ web-server:
   ## banner allowing people to go back if they don't like the new system.
   # fallbackUrl: "https://data.gov.au"
 
+  # Google Analytics Ids to collect analytics data from the frontend
+  gapiIds:
+    - "UA-92539508-5"
+
+  ## The search score after which to show a "suggest a dataset" form
+  # datasetSearchSuggestionScoreThreshold: 65
+
 ## Settings for the broken link minion, which crawls URLs of distributions in order
 ## to determine whether they're still available.
 # minion-broken-link:
@@ -421,9 +442,13 @@ web-server:
 ## based off the availability, license and format of a dataset
 # minion-linked-data-rating:
 
-## Settings for teh visualization minion, which looks at tabular data in order to
+## Settings for the visualization minion, which looks at tabular data in order to
 ## determine which columns can be charted.
 # minion-visualization:
 
 content-api:
   scssVars: '{"AU-color-foreground-action":"#726a5c","AU-color-foreground-focus":"#272727","AU-color-foreground-text":"#272727","AU-color-background":"#ffffff","AU-colordark-foreground-action":"#f2f2f2","AU-colordark-foreground-focus":"#144475","AU-colordark-foreground-text":"#f2f2f2","AU-colordark-background":"#272727","header-color-background":"#726a5c","header-opacity-desktop-background":"1","header-color-border":"#726a5c","header-color-text":"#726a5c","header-color-action":"#f2f2f2","header-color-action-background":"transparent","header-color-focus":"#f2f2f2","header-color-focus-background":"#272727","header-color-mobile-toggle-button-text":"#f2f2f2","header-color-mobile-toggle-button-icon":"#f2f2f2","header-color-mobile-nav-background":"white","header-color-mobile-nav-border-bottom":"#dad9db","header-color-mobile-nav-border-left":"transparent","header-color-mobile-nav-action":"#272727","header-color-mobile-nav-action-background":"transparent","header-color-mobile-nav-active":"inherit","header-color-mobile-nav-active-background":"#f4f3f5","header-color-mobile-nav-active-border":"#272727","header-color-mobile-nav-focus":"#f4f3f5","header-color-mobile-nav-focus-background":"#272727","header-color-mobile-nav-focus-border":"transparent","header-color-mobile-nav-content":"inherit","header-color-mobile-nav-content-background":"transparent","header-color-mobile-nav-content-border-bottom":"#726a5c","footer-color-background":"#272727","footer-color-border":"#272727","footer-color-text":"#f2f2f2","footer-color-action":"#f2f2f2","footer-color-focus":"#cac8bf"}'
+
+  # Settings for the admin API, which allows for changes to be made to the magda
+# installation at runtime... e.g. creating new connector jobs
+# admin-api:
