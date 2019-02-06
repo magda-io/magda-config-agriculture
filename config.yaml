@@ -89,7 +89,7 @@ tags:
   search-api: true
   session-db: true
   web-server: true
-  connectors: false
+  connectors: true
 
   ## Whether to use an ingress, which is necessary for HTTPS and using the Google CDN with
   ## Google Kubernetes Engine. By default this is off, and access is provided to the cluster
@@ -288,6 +288,11 @@ gateway:
 
     ## If using a LoadBalancer, the IP to try to use. Leave unset to get an automatic one
     # loadBalancerIP:
+    
+  ckanAuthenticationUrl: https://data.gov.au/data
+
+  image:
+    tag: ckan-url-fix
 
   ## If replacing a CKAN installation with Magda, this will redirect CKAN paths without
   ## direct magda equivalents (e.g. the API) to a ckan installation at this domain
