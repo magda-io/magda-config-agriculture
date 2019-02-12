@@ -288,8 +288,8 @@ gateway:
 
     ## If using a LoadBalancer, the IP to try to use. Leave unset to get an automatic one
     # loadBalancerIP:
-    
-  ckanAuthenticationUrl: https://data.gov.au/data
+  auth:
+    ckanAuthenticationUrl: https://data.gov.au/data
 
   image:
     tag: ckan-url-fix
