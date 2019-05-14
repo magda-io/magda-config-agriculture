@@ -35,7 +35,7 @@ global:
     ## The imagePullPolicy to use for images - generally unless you're actively
     ## trying to track development this should be "IfNotPresent", otherwise if
     ## you are it can be "Always". Defaults to "IfNotPresent"
-    # pullPolicy: IfNotPresent
+    # pullPolicy: Always
     ## Kubernetes secret to use if you're fetching images from a private repository
     # imagePullSecret: ""
 
@@ -89,6 +89,7 @@ tags:
   search-api: true
   session-db: true
   web-server: true
+  opa: true
   connectors: true
 
   ## Whether to use an ingress, which is necessary for HTTPS and using the Google CDN with
@@ -105,7 +106,7 @@ tags:
 ## These are the external jobs that pull data in from other data portals. A default is provided here for you.
 connectors:
   ## Whether to run an initial job to crawl all these on install
-  includeInitialJobs: true
+  includeInitialJobs: false
   
   ## Whether to run recurring jobs on the schedule specified per connector.
   includeCronJobs: true
@@ -297,9 +298,6 @@ gateway:
     googleClientId: 853021589328-91pdmsap2d598ca3v2j02q969hu3o4kn.apps.googleusercontent.com
     ckanAuthenticationUrl: https://data.gov.au/data
 
-  image:
-    tag: ckan-url-fix
-
   ## If replacing a CKAN installation with Magda, this will redirect CKAN paths without
   ## direct magda equivalents (e.g. the API) to a ckan installation at this domain
   # ckanRedirectionDomain: "example.com"
@@ -440,6 +438,10 @@ web-server:
 
   ## The search score after which to show a "suggest a dataset" form
   # datasetSearchSuggestionScoreThreshold: 65
+
+  featureFlags:
+    cataloguing: true
+
 
 ## Settings for the broken link minion, which crawls URLs of distributions in order
 ## to determine whether they're still available.
