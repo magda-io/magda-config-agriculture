@@ -63,7 +63,7 @@ helm repo add magda-io https://charts.magda.io
 
 7. Install magda
 ```bash
-helm upgrade magda magda-io/magda --wait --timeout 30000 --install -f config.yaml --devel
+helm upgrade magda magda-io/magda --wait --timeout 30000 --install -f config.yaml
 ```
 
 This will take a while for it to get everything set up. If you want to watch progress, run `kubectl get pods -w` in another terminal.
@@ -81,3 +81,15 @@ By default, data.gov.au will be crawled on startup so you'll start with some dat
 9. Once everything is running, run sql migration scripts for this instance
 
 https://github.com/magda-io/magda-config-agriculture/blob/master/sql-migrations/*.sql
+
+# To update
+1. Merge the latest from this repository into yours.
+2. Run:
+```bash
+helm repo update
+```
+
+3. Run:
+```
+helm upgrade magda magda-io/magda --wait --timeout 30000 --install -f config.yaml --version=<the latest version>
+```
