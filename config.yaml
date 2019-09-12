@@ -321,8 +321,9 @@ gateway:
     ## If using a LoadBalancer, the IP to try to use. Leave unset to get an automatic one
     # loadBalancerIP:
   auth:
-    googleClientId: 853021589328-91pdmsap2d598ca3v2j02q969hu3o4kn.apps.googleusercontent.com
     ckanAuthenticationUrl: https://data.gov.au/data
+    vanguardWsFedIdpUrl: https://authentication.business.gov.au/fas/v2/wsfed12/authenticate
+    vanguardWsFedRealm: https://agriculture.magda.io/vanguard
 
   ## If replacing a CKAN installation with Magda, this will redirect CKAN paths without
   ## direct magda equivalents (e.g. the API) to a ckan installation at this domain and path
