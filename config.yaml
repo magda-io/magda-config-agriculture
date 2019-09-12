@@ -476,6 +476,9 @@ web-server:
   featureFlags:
     cataloguing: true
 
+  ## The id of the organization to display by default in the Add Dataset flow.
+  defaultOrganizationId: "5cc2f366-9c3d-461d-99a3-9060b5ee7e00"
+
 
 ## Settings for the broken link minion, which crawls URLs of distributions in order
 ## to determine whether they're still available.
