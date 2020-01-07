@@ -67,6 +67,9 @@ global:
   ## namespaces. Make sure that the priorities tag is true if you turn this on.
   # enablePriorityClass: true
 
+  ## Whether to enable multi-tenancy (pre-alpha)
+  # enableMultiTenants: false
+
 ## Tags allow for services to be turned on and off on the fly... e.g. if you don't need
 ## to send emails, turn the correspondence-api off
 tags:
@@ -104,13 +107,17 @@ tags:
   ingress: true
 
   ## Priority classes - see explanation under "enablePriorityClasses" above
-  # priorities: true
+  priorities: true
 
   ## Minions, which listen to changes in the registry and add extra metadata
   minion-broken-link: false
   minion-linked-data-rating: false
   minion-visualization: true
   minion-format: true
+
+  ## Tenant api / db (pre-alpha)
+  tenant-api: false
+  tenant-db: false
 
 ## These are the external jobs that pull data in from other data portals. A default is provided here for you.
 connectors:
@@ -147,7 +154,6 @@ connectors:
     # tag: vx.x.x
     # pullPolicy: IfNotPresent
     # imagePullSecret: ""
-
 
       ## CKAN-only: Only get datasets that match this organisation name - you can only have one due to limitations
       ## in the CKAN API, if you need multiple organisations make multiple connectors.
@@ -266,6 +272,10 @@ cloud-sql-proxy:
 
 ## A pod that controls the content in magda's UI
 # content-api:
+  ## Override the SCSS variables used by Magda's SCSS files. Look at the "_variables.scss"
+  ## file in the magda code for details. Most customisation can be performed by setting
+  ## magda-color-primary and magda-color-secondary
+  # scssVars: '{"magda-color-primary": "#272727", "magda-color-secondary": "#726a5c"}'
 
 ## The database behind content-api
 # content-db:
@@ -391,7 +401,8 @@ gateway:
     credentials: true
     origin: true
 
-  ## Enables a simple form at /auth that allows you to test login and logout functionality
+  ## Enables authorization, include a list of authorization options at /auth/providers
+  ## and a simple form at /auth that allows you to test login and logout functionality
   ## without needing a web pod
   enableAuthEndpoint: true
 
@@ -421,6 +432,10 @@ gateway:
   ## Log level to use
   # logLevel: INFO
 
+  ## Stops checking for authorization on methods that change the state of the registry.
+  ## Useful when running locally - DO NOT TURN ON IN PRODUCTION
+  # skipAuthorization: false
+
   ## Configures the liveness probe that checks if the registry is still alive. This
   ## is configurable seperately because currently the registry api has a tendency to
   ## slow down over time, and needs to be restarted when this occurs.
@@ -431,15 +446,21 @@ gateway:
   ## but can only ever run one pod at a time, and read-only, which can only do read-only requests but
   ## is stateless and can be horizontally scaled
   # deployments:
-  #   full:
+    # full:
+      ## Resources for the full deployment, as per other resource declarations
+      # resources:
 
     # readOnly:
       ## Whether to enable the read-only deployment - if not all traffic will go to the full deployment,
       ## otherwise traffic through /api/v0/registry will come here and only traffic to /api/v0/registry-auth
       ## will go to the full deployment
-      # enable: false
+      # enable: true
+      
+      ## Number of replicas
+      # replicas: 2
 
-
+      ## Resources for the full deployment, as per other resource declarations
+      # resources:
 
 ## Configures the registry database, if a separate one is being used.
 # registry-db:
