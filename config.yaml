@@ -428,7 +428,8 @@ gateway:
 
 ## Configures the registry, which holds information about datasets, distributions,
 ## organisations etc and distributes it.
-# registry-api:
+registry-api:
+  validateJsonSchema: false
   ## Log level to use
   # logLevel: INFO
 
